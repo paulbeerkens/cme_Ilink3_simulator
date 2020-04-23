@@ -1,1 +1,4 @@
-add_subdirectory (OrderEntryServiceGateway)
+add_subdirectory(App)
+add_subdirectory(OrderEntryServiceGateway)
+add_subdirectory(MarketSegmentGateway)
+add_subdirectory(Connection)
