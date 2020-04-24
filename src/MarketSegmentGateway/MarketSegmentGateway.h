@@ -21,7 +21,6 @@ public:
     bool start ();
     bool stop ();
 protected:
-
     std::int32_t port_ {-1};
     int socket_ {-1};
 
@@ -31,6 +30,8 @@ protected:
 
     std::mutex mutex_;
     std::unordered_set <std::shared_ptr <FIXPConnection>> activeConnections_; //protected by mutex_;
+
+
 };
 
 

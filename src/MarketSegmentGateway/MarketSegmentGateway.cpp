@@ -91,10 +91,11 @@ void MarketSegmentGateway::handleClientConnections() {
         }
         LOGINFO ("MarketSegmentGateway connected to a client running on "<<remoteIP);
 
-        auto newConnection=std::make_shared<FIXPConnection> (newSocket);
+        auto newConnection=std::make_shared<FIXPConnection> (newSocket, remoteIP);
         {
             std::lock_guard<std::mutex> guard (mutex_);
             activeConnections_.insert(newConnection);
         }
     }
 }
+
