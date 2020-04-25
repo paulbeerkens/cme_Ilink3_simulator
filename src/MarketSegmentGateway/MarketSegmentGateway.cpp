@@ -91,11 +91,29 @@ void MarketSegmentGateway::handleClientConnections() {
         }
         LOGINFO ("MarketSegmentGateway connected to a client running on "<<remoteIP);
 
-        auto newConnection=std::make_shared<FIXPConnection> (newSocket, remoteIP);
+        auto newConnection=std::make_shared<FIXPConnection> (newSocket, remoteIP,*this);
         {
             std::lock_guard<std::mutex> guard (mutex_);
             activeConnections_.insert(newConnection);
         }
+
+        std::promise <void> threadStartedPromise;
+        std::thread([newConnection,&threadStartedPromise]() mutable{
+            LOGINFO ("Starting connection thread for connection ID:"<<newConnection->getConnectionId ());
+            threadStartedPromise.set_value();
+            newConnection->processMessages ();
+            }).detach();
+
+        threadStartedPromise.get_future().wait(); //wait till thread has been started;
+
+    }
+}
+
+void MarketSegmentGateway::connectionEnd(std::shared_ptr<FIXPConnection> connection) {
+    {
+        std::lock_guard <std::mutex> guard (mutex_);
+        assert (activeConnections_.count (connection)>0&&"Trying to delete an unknown connection.");
+        activeConnections_.erase (connection);
     }
 }
 

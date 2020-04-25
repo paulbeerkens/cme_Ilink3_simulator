@@ -7,10 +7,11 @@
 
 #include <cstdint>
 #include <string>
+#include "IConnectionCB.h"
 
-class FIXPConnection {
+class FIXPConnection: std::enable_shared_from_this<FIXPConnection> {
 public:
-    FIXPConnection (std::int32_t socket, const std::string& remoteHost);
+    FIXPConnection (std::int32_t socket, const std::string& remoteHost, IConnectionCB& cb);
 
     ~FIXPConnection() {
         stop ();
@@ -18,6 +19,11 @@ public:
     }
 
     void stop ();
+
+    void processMessages ();
+
+    uint32_t getConnectionId() const {return connectionId_;}
+
 protected:
 
     std::int32_t socket_;
@@ -26,10 +32,10 @@ protected:
     inline static std::atomic <std::uint32_t> nextFreeConnectionId_ {1};
     std::uint32_t connectionId_;
 
-    std::unique_ptr <std::thread> threadPtr_;
+    //std::unique_ptr <std::thread> threadPtr_;
     std::atomic <bool> requestedToTerminate_ {false};
 
-    void processMessages (); //run inside the treadPtr thread.
+    IConnectionCB& cb_;
 
     bool readN (char* buf, std::size_t bytesToRead);
 };

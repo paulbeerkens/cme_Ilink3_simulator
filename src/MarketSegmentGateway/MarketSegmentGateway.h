@@ -14,12 +14,16 @@
 #include <unordered_set>
 #include <Connection/FIXPConnection.h>
 #include <mutex>
+#include <Connection/IConnectionCB.h>
 
-class MarketSegmentGateway {
+class MarketSegmentGateway: public IConnectionCB  {
 public:
     bool initialize (const MSGWSettings& msgwSettings);
     bool start ();
     bool stop ();
+
+    //IConnectionCB
+void connectionEnd (std::shared_ptr<FIXPConnection> connection) override;
 protected:
     std::int32_t port_ {-1};
     int socket_ {-1};

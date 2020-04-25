@@ -19,11 +19,18 @@
 //callback
 //unittest this
 //https://www.cmegroup.com/confluence/display/EPICSANDBOX/iLink+3+-+Simple+Binary+Encoding#space-menu-link-content
-FIXPConnection::FIXPConnection(std::int32_t socket, const std::string& remoteHost)
+FIXPConnection::FIXPConnection(std::int32_t socket, const std::string& remoteHost, IConnectionCB& cb)
 :socket_ (socket)
-,remoteHost_ (remoteHost){
+,remoteHost_ (remoteHost)
+,cb_ (cb){
     connectionId_=nextFreeConnectionId_++;
 
+   /* auto newConnection=shared_from_this();
+    std::thread([newConnection](){
+        newConnection->processMessages ();
+    }).detach();*/
+
+/*
     std::promise <void> threadStartedPromise_;
     threadPtr_=std::make_unique <std::thread> ([this, &threadStartedPromise_] () {
         LOGINFO ("Starting connection thread for connection ID:"<<this->connectionId_);
@@ -33,6 +40,7 @@ FIXPConnection::FIXPConnection(std::int32_t socket, const std::string& remoteHos
     });
 
     threadStartedPromise_.get_future().wait(); //wait till thread has been started;
+    */
 }
 
 void FIXPConnection::processMessages() {
@@ -66,6 +74,8 @@ void FIXPConnection::processMessages() {
 
         std::cout<<"Length: "<<header.msgSize_<<" Encoding: "<<header.enodingType_<<std::endl;
     }
+
+    cb_.connectionEnd(shared_from_this());
 }
 
 void FIXPConnection::stop() {
@@ -75,14 +85,14 @@ void FIXPConnection::stop() {
         ::close (socket_);
         socket_=-1;
     }
-
+/*
     if (threadPtr_) {
         if (threadPtr_->joinable()) {
             LOGINFO ("Waiting for thread for connection with ID:"<<connectionId_<<" to stop.");
             threadPtr_->join ();
         }
         threadPtr_=nullptr;
-    }
+    }*/
 }
 
 bool FIXPConnection::readN(char* buf, std::size_t bytesToRead) {

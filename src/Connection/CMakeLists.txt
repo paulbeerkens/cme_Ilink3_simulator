@@ -1,5 +1,6 @@
 set(HEADER_FILES
         FIXPConnection.h
+        IConnectionCB.h
         )
 
 set(SOURCE_FILES
