@@ -98,7 +98,7 @@ void MarketSegmentGateway::handleClientConnections() {
         }
 
         std::promise <void> threadStartedPromise;
-        std::thread([newConnection,&threadStartedPromise]() mutable{
+        std::thread([newConnection,&threadStartedPromise]() {
             LOGINFO ("Starting connection thread for connection ID:"<<newConnection->getConnectionId ());
             threadStartedPromise.set_value();
             newConnection->processMessages ();
@@ -110,10 +110,16 @@ void MarketSegmentGateway::handleClientConnections() {
 }
 
 void MarketSegmentGateway::connectionEnd(std::shared_ptr<FIXPConnection> connection) {
+    size_t itemsRemoved;
     {
         std::lock_guard <std::mutex> guard (mutex_);
         assert (activeConnections_.count (connection)>0&&"Trying to delete an unknown connection.");
-        activeConnections_.erase (connection);
+        itemsRemoved=activeConnections_.erase (connection);
+    }
+    if (itemsRemoved>0) {
+        LOGINFO ("[ConId: "<<connection->getConnectionId()<<"] Removing connection from list of active connections.");
+    } else {
+        LOGERROR ("[ConId: "<<connection->getConnectionId()<<"] Tried to remove unkown connection with id. This should never happen.");
     }
 }
 

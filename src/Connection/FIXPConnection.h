@@ -9,7 +9,7 @@
 #include <string>
 #include "IConnectionCB.h"
 
-class FIXPConnection: std::enable_shared_from_this<FIXPConnection> {
+class FIXPConnection: public std::enable_shared_from_this<FIXPConnection> {
 public:
     FIXPConnection (std::int32_t socket, const std::string& remoteHost, IConnectionCB& cb);
 
