@@ -20,6 +20,11 @@ MessageBuffer::MessageBuffer(std::size_t size) {
     wrdPtr_=rdPtr_=buf_;
 }
 
+MessageBuffer::~MessageBuffer() {
+    free (buf_);
+    buf_= nullptr;
+}
+
 void MessageBuffer::expandIfRequired(std::size_t size) {
     if (size>bufSize_) {
         buf_= reinterpret_cast<char*>(realloc (reinterpret_cast<void*>(buf_), size));
@@ -71,5 +76,7 @@ bool MessageBuffer::readFromSocket(std::int32_t socket, std::size_t bytesToRead)
     return bytesRead == bytesToRead;
     return false;
 }
+
+
 
 

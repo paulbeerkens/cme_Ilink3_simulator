@@ -11,6 +11,7 @@
 class MessageBuffer {
 public:
     explicit MessageBuffer (std::size_t size);
+    ~MessageBuffer();
 
     void expandIfRequired (std::size_t size); //expands buffer if required. Will not shrink the buffer
     void reset (); //sets read and write buffer to beginning

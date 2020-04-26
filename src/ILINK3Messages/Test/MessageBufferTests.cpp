@@ -33,3 +33,14 @@ TEST(ILINK3MessagesTests, Write2) {
     EXPECT_FALSE (buf.bad ());
     EXPECT_EQ (buf.getWrtBufFree (),10);
 }
+
+TEST(ILINK3MessagesTests, Write3) {
+    MessageBuffer buf(10);
+    EXPECT_FALSE (buf.bad ());
+    char c [5] {'H','e','l','l','o'};
+    buf.write(c,5);
+    char w [5] {' ','t','e','s','t'};
+    buf.write(w,5);
+    EXPECT_FALSE (buf.bad ());
+    EXPECT_EQ (buf.getWrtBufFree (),0);
+}
