@@ -15,9 +15,13 @@
 #include <Connection/FIXPConnection.h>
 #include <mutex>
 #include <Connection/IConnectionCB.h>
+#include <ILINK3Messages/MsgFactory.h>
 
 class MarketSegmentGateway: public IConnectionCB  {
 public:
+    MarketSegmentGateway ( MsgFactory& msgFactory)
+    :msgFactory_ (msgFactory) {};
+
     bool initialize (const MSGWSettings& msgwSettings);
     bool start ();
     bool stop ();
@@ -26,7 +30,7 @@ public:
 void connectionEnd (std::shared_ptr<FIXPConnection> connection) override;
 protected:
     std::int32_t port_ {-1};
-    int socket_ {-1};
+    std::int32_t socket_ {-1};
 
     void handleClientConnections (); //runs in the *threadPtr thread.
     std::unique_ptr <std::thread> threadPtr_;
@@ -35,7 +39,7 @@ protected:
     std::mutex mutex_;
     std::unordered_set <std::shared_ptr <FIXPConnection>> activeConnections_; //protected by mutex_;
 
-
+    MsgFactory& msgFactory_;
 };
 
 

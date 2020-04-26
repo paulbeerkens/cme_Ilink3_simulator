@@ -7,7 +7,8 @@
 
 
 class MsgFactory {
-
+public:
+    bool initialize () {return true;}
 };
 
 

@@ -13,3 +13,4 @@ target_include_directories(MarketSegmentGateway INTERFACE ../.) #Allow this libr
 
 target_link_libraries(MarketSegmentGateway libLog)
 target_link_libraries(MarketSegmentGateway FIXPConnection)
+target_link_libraries(MarketSegmentGateway ILINK3Messages)

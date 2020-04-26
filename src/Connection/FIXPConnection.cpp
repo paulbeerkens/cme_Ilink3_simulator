@@ -9,6 +9,7 @@
 #include <sys/socket.h>
 #include <ILINK3Messages/ILink3Headers.h>
 #include <string.h>
+#include <ILINK3Messages/MessageBuffer.h>
 
 #define LOGID "[ConId: "<<connectionId_<<"] "
 
@@ -44,8 +45,11 @@ FIXPConnection::FIXPConnection(std::int32_t socket, const std::string& remoteHos
 }
 
 void FIXPConnection::processMessages() {
+    MessageBuffer SBEHeaderAndMessage (1024);
+    SOFH header;
+
     while (!requestedToTerminate_) {
-        SOFH header;
+        //TODO use a MessageBuffer for SOFH header to avoid code duplication for readN
 
         if (!readN (reinterpret_cast<char*> (&header), sizeof (header))) {
             LOGWARN(LOGID<<"Failed to read Simple Open Framing Header.");
@@ -58,6 +62,17 @@ void FIXPConnection::processMessages() {
             break;
         }
 
+        //Read the rest of the message
+
+        //The size in the SOFH is inclusive of SOFH so we need to subtract that (SOFH=Simple Open Framing Header)
+        std::size_t restOfMessageSize=header.msgSize_-sizeof (header);
+        //We are going to reuse the same message buffer but reset (and make sure it is big enough)
+        SBEHeaderAndMessage.expandIfRequired(restOfMessageSize);
+        SBEHeaderAndMessage.reset();
+        if (!SBEHeaderAndMessage.readFromSocket(socket_,restOfMessageSize )) {
+            LOGERROR (LOGID<<"Failed to read message after SOFH.")
+            break;
+        }
         //TODO write a message buffer to receive the message in.
         //TODO ask the message factory to create the message from the buffer.
 

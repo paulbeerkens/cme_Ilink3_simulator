@@ -5,6 +5,7 @@
 #include "CMESimulator.h"
 #include <Logger/LogMacros.h>
 #include <MarketSegmentGateway/MarketSegmentGateway.h>
+#include <ILINK3Messages/MsgFactory.h>
 
 bool CMESimulator::setup() {
     msgwSettings_.port_=25000;
@@ -13,10 +14,16 @@ bool CMESimulator::setup() {
 }
 
 bool CMESimulator::run() {
-    MarketSegmentGateway msgw;
+    MsgFactory msgFactory;
+    MarketSegmentGateway msgw (msgFactory);
+
+    if (!msgFactory.initialize ()) {
+        LOGERROR ("Failed to initialze Message Factory. This is fatal.")
+        return false;
+    }
 
     if (!msgw.initialize(msgwSettings_)) {
-        LOGERROR ("Failed to initialize Market Segment Gateway")
+        LOGERROR ("Failed to initialize Market Segment Gateway. This is fatal.")
         return false;
     }
 
