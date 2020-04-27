@@ -1,3 +1,6 @@
 [submodule "external/Logger"]
 	path = external/Logger
 	url = https://github.com/paulbeerkens/Logger.git
+[submodule "external/libWebServer2"]
+	path = external/libWebServer2
+	url = https://github.com/paulbeerkens/libWebServer.git
