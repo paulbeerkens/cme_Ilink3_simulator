@@ -27,7 +27,9 @@ public:
     bool stop ();
 
     //IConnectionCB
-void connectionEnd (std::shared_ptr<FIXPConnection> connection) override;
+    void connectionEnd (std::shared_ptr<FIXPConnection> connection) override;
+    bool processMessage(MessageBuffer &msgBuffer) override;
+
 protected:
     std::int32_t port_ {-1};
     std::int32_t socket_ {-1};

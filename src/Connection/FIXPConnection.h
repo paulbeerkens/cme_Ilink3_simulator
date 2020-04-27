@@ -37,7 +37,7 @@ protected:
 
     IConnectionCB& cb_;
 
-    bool readN (char* buf, std::size_t bytesToRead);
+    //bool readN (char* buf, std::size_t bytesToRead);
 };
 
 

@@ -23,7 +23,8 @@
 FIXPConnection::FIXPConnection(std::int32_t socket, const std::string& remoteHost, IConnectionCB& cb)
 :socket_ (socket)
 ,remoteHost_ (remoteHost)
-,cb_ (cb){
+,cb_ (cb)
+{
     connectionId_=nextFreeConnectionId_++;
 
    /* auto newConnection=shared_from_this();
@@ -45,49 +46,41 @@ FIXPConnection::FIXPConnection(std::int32_t socket, const std::string& remoteHos
 }
 
 void FIXPConnection::processMessages() {
+    MessageBuffer SOFHBuffer (sizeof(SOFH));
     MessageBuffer SBEHeaderAndMessage (1024);
-    SOFH header;
 
     while (!requestedToTerminate_) {
-        //TODO use a MessageBuffer for SOFH header to avoid code duplication for readN
 
-        if (!readN (reinterpret_cast<char*> (&header), sizeof (header))) {
-            LOGWARN(LOGID<<"Failed to read Simple Open Framing Header.");
+        SOFHBuffer.reset();
+        if (!SOFHBuffer.readFromSocket(socket_,sizeof (SOFH) )) {
+            LOGERROR (LOGID<<"Failed to read Simple Open Framing Header.");
             break;
         }
+        const SOFH* header= reinterpret_cast<const SOFH*> (SOFHBuffer.getRdPtr ());
 
-        if (header.enodingType_!=0xcafe) {
+        if (header->enodingType_!=0xcafe) {
             //TODO report this error to a central bad message repository which will be shown on a web page for debugging purposes
-            LOGERROR (LOGID<<"Encoding type in header is not recognized. Not a valid message. Received "<<std::showbase<<std::hex<<header.enodingType_);
+            LOGERROR (LOGID<<"Encoding type in header is not recognized. Not a valid message. Received "<<std::showbase<<std::hex<<header->enodingType_);
             break;
         }
 
         //Read the rest of the message
 
         //The size in the SOFH is inclusive of SOFH so we need to subtract that (SOFH=Simple Open Framing Header)
-        std::size_t restOfMessageSize=header.msgSize_-sizeof (header);
+        std::size_t restOfMessageSize=header->msgSize_-sizeof (SOFH);
         //We are going to reuse the same message buffer but reset (and make sure it is big enough)
         SBEHeaderAndMessage.expandIfRequired(restOfMessageSize);
         SBEHeaderAndMessage.reset();
         if (!SBEHeaderAndMessage.readFromSocket(socket_,restOfMessageSize )) {
+            //TODO report this error to a central bad message repository which will be shown on a web page for debugging purposes
             LOGERROR (LOGID<<"Failed to read message after SOFH.")
             break;
         }
-        //TODO write a message buffer to receive the message in.
-        //TODO ask the message factory to create the message from the buffer.
 
-        //Something lke this?
-        // auto c = std::make_shared<MyClass>("Test");
-        // std::thread([c](){
-        //        c->doWork ();
-        //    }).detach();
-        //    std::cout << "After async" << std::endl;
-
-
-
-        //asio https://www.boost.org/doc/libs/1_53_0/doc/html/boost_asio/example/chat/chat_server.cpp
-
-        std::cout<<"Length: "<<header.msgSize_<<" Encoding: "<<header.enodingType_<<std::endl;
+        if (!cb_.processMessage(SBEHeaderAndMessage)) {
+            //TODO report this error to a central bad message repository
+            continue;
+        }
     }
 
     cb_.connectionEnd(shared_from_this());
@@ -109,7 +102,7 @@ void FIXPConnection::stop() {
         threadPtr_=nullptr;
     }*/
 }
-
+/*
 bool FIXPConnection::readN(char* buf, std::size_t bytesToRead) {
     decltype(bytesToRead) bytesRead=0;
 
@@ -130,3 +123,4 @@ bool FIXPConnection::readN(char* buf, std::size_t bytesToRead) {
 
     return bytesRead == bytesToRead;
 }
+*/

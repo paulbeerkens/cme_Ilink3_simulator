@@ -25,6 +25,8 @@ public:
     inline size_t getWrtBufFree() const { return bufSize_ - uintptr_t (wrdPtr_ - buf_); }
 
     bool readFromSocket (std::int32_t socket, std::size_t size);
+
+    const char* getRdPtr () const {return rdPtr_;};
 protected:
     char* buf_    {nullptr};
     char* rdPtr_  {nullptr};

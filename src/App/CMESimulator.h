@@ -4,6 +4,7 @@
 
 #include <thread>
 #include <MarketSegmentGateway/MSGWSettings.h>
+#include <ILINK3Messages/MsgFactorySettings.h>
 
 class CMESimulator {
 public:
@@ -12,6 +13,7 @@ public:
 
 protected:
     MSGWSettings msgwSettings_;
+    MsgFactorySettings msgFactorySettings_;
 };
 
 

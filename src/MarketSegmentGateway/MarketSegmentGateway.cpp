@@ -123,3 +123,8 @@ void MarketSegmentGateway::connectionEnd(std::shared_ptr<FIXPConnection> connect
     }
 }
 
+bool MarketSegmentGateway::processMessage(MessageBuffer &msgBuffer) {
+    auto newMsg=msgFactory_.processMessage (msgBuffer);
+    return false;
+}
+
