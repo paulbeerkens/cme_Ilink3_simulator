@@ -15,3 +15,4 @@ target_include_directories(ILINK3Messages INTERFACE ../.) #Allow this library to
 
 target_link_libraries(ILINK3Messages libLog)
 add_subdirectory(Test)
+add_subdirectory(TestApp)
