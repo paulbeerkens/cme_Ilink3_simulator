@@ -2,7 +2,7 @@
 // Created by pbeerkens on 4/27/20.
 //
 
-#include "ILink3Field.h"
+#include "ILink3FieldDefinition.h"
 
 PrimitiveType PrimitiveTypeFromString(const std::string &type) {
 
@@ -21,4 +21,22 @@ PrimitiveType PrimitiveTypeFromString(const std::string &type) {
 
     return PrimitiveType::none_t;
 
+}
+
+std::ostream &operator<<(std::ostream &os, PrimitiveType type) {
+    {
+        switch (type) {
+            #define TYPEOUTPUT(t) case PrimitiveType::t: os<<#t; break;
+
+            TYPEOUTPUT(none_t)
+            TYPEOUTPUT(char_t)
+            TYPEOUTPUT(uint8_t)
+            TYPEOUTPUT(uint16_t)
+            TYPEOUTPUT(uint32_t)
+            TYPEOUTPUT(uint64_t)
+            TYPEOUTPUT(int32_t)
+            TYPEOUTPUT(int64_t)
+        }
+        return os;
+    }
 }

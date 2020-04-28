@@ -1,7 +1,12 @@
 #include "CMESimulator.h"
 #include <Logger/LogMacros.h>
+#include <webserver/WebServer.h>
 
 int main ([[maybe_unused]] int argc, [[maybe_unused]] char** args) {
+    if (!webserver::WebServer::get ().start (26000)) {
+        LOGERROR ("Failed to start webserver");
+    }
+
     CMESimulator cmeSimulator;
     if (!cmeSimulator.setup()) {
         LOGERROR("Failed to setup. This is fatal.");

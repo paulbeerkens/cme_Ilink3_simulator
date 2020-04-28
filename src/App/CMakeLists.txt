@@ -15,3 +15,4 @@ target_link_libraries(CMESimulator libWebServer libLog)
 #internal libraries
 target_link_libraries(CMESimulator MarketSegmentGateway)
 target_link_libraries(CMESimulator ILINK3Messages)
+target_link_libraries(CMESimulator libWebServer)
