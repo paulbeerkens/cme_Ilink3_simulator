@@ -77,6 +77,14 @@ bool MessageBuffer::readFromSocket(std::int32_t socket, std::size_t bytesToRead)
     return false;
 }
 
+void MessageBuffer::moveRdPtr(std::size_t bytes) {
+    rdPtr_+=bytes;
+    if (rdPtr_>wrdPtr_) {
+        bad_=true;
+        rdPtr_-=bytes;
+    }
+}
+
 
 
 

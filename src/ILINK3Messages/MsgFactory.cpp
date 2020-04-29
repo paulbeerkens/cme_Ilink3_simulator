@@ -10,15 +10,45 @@
 #include <map>
 
 
-std::unique_ptr<ILink3Msg> MsgFactory::processMessage([[maybe_unused]] MessageBuffer &msgBuffer) {
+std::unique_ptr<ILink3Msg> MsgFactory::processMessage(MessageBuffer &msgBuffer) {
     const SBEHeader* sbeHeader= reinterpret_cast<const SBEHeader*>(msgBuffer.getRdPtr());
+    msgBuffer.moveRdPtr (sizeof (SBEHeader));
     std::cout<<sbeHeader->blockLength_<<std::endl;
-    std::cout<<sbeHeader->schemaId_<<std::endl;
+    std::cout<<sbeHeader->templateId_<<std::endl;
 
+    switch (sbeHeader->templateId_) {
+        case NegotiateMsg::id:
+            NegotiateMsg newMsg;
+            newMsg.readFromBuffer (msgBuffer);
+            if (msgBuffer.bad ()) {
+                LOGERROR ("Failed to read msg with id "<<NegotiateMsg::id);
+                return nullptr;
+            }
+
+            std::cout<<newMsg.getAccessKeyID()<<std::endl;
+            std::cout<<newMsg.getFirm()<<std::endl;
+            std::cout<<newMsg.getSession()<<std::endl;
+
+    }
+/*
+    const Negotiate500* msg=reinterpret_cast<const Negotiate500*>(msgBuffer.getRdPtr());
+    std::cout<<msg->UUID<<std::endl;
+    msgBuffer.moveRdPtr (sizeof (Negotiate500));
+    std::cout<<msgBuffer.getLeftToRead()<<std::endl;
+*/
     return nullptr;
 }
 
 bool MsgFactory::initialize(MsgFactorySettings &msgFactorySettings) {
+    static std::string NAME_TAG("name");
+    static std::string DESCRIPTION_TAG("description");
+    static std::string BLOCK_LENGTH_TAG("blockLength");
+    static std::string ID_TAG("id");
+    static std::string FIELD_TAG("field");
+    static std::string LENGTH_TAG("length");
+    static std::string PRIMITIVE_TYPE_TAG("primitiveType");
+    static std::string MESSAGE_TAG("ns2:message");
+
     LOGINFO ("Loading ILINK3 message formats from "<<msgFactorySettings.msgFormatFile_);
 
     TiXmlDocument doc;
@@ -46,12 +76,7 @@ bool MsgFactory::initialize(MsgFactorySettings &msgFactorySettings) {
         for (; pElem; pElem = pElem->NextSiblingElement("type")) {
             ILink3FieldDefinition newField;
 
-            static std::string NAME ("name");
-            static std::string DESCRIPTION ("description");
-            static std::string LENGTH ("length");
-            static std::string PRIMITIVE_TYPE ("primitiveType");
-
-            const std::string*nameStr=pElem->Attribute(NAME);
+            const std::string*nameStr=pElem->Attribute(NAME_TAG);
             if (nameStr) {
                 newField.name_ = *nameStr;
             } else {
@@ -59,15 +84,15 @@ bool MsgFactory::initialize(MsgFactorySettings &msgFactorySettings) {
                 continue;
             }
 
-            const auto*pDescription = pElem->Attribute (DESCRIPTION);
+            const auto*pDescription = pElem->Attribute (DESCRIPTION_TAG);
             if (pDescription) newField.description_=*pDescription;
 
             int length;
-            if (pElem->QueryIntAttribute (LENGTH, &length)==TIXML_SUCCESS) {
+            if (pElem->QueryIntAttribute (LENGTH_TAG, &length) == TIXML_SUCCESS) {
                 newField.length_=static_cast <decltype(newField.length_)>(length);
             };
 
-            const auto*pPrimitiveType = pElem->Attribute (PRIMITIVE_TYPE);
+            const auto*pPrimitiveType = pElem->Attribute (PRIMITIVE_TYPE_TAG);
             if (!pPrimitiveType) {
                 LOGERROR ("Found entry in types|type without primitiveType with name "<<newField.name_);
                 continue;
@@ -84,21 +109,16 @@ bool MsgFactory::initialize(MsgFactorySettings &msgFactorySettings) {
         };
     }
 
-    //TODO load composit fields and enums
+    //TODO load composite fields and enums
 
     //Read messages
     {
-        static std::string MESSAGE_TAG ("ns2:message");
+
         pElem = hRoot.FirstChild(MESSAGE_TAG).Element();
         for (; pElem; pElem = pElem->NextSiblingElement(MESSAGE_TAG)) {
             ILink3MsgDefinition newMsgDefinition;
 
-            static std::string NAME ("name");
-            static std::string DESCRIPTION ("description");
-            static std::string BLOCK_LENGTH ("blockLength");
-            static std::string ID ("id");
-
-            const std::string*nameStr=pElem->Attribute(NAME);
+            const std::string*nameStr=pElem->Attribute(NAME_TAG);
             if (nameStr) {
                 newMsgDefinition.name_ = *nameStr;
             } else {
@@ -106,24 +126,39 @@ bool MsgFactory::initialize(MsgFactorySettings &msgFactorySettings) {
                 continue;
             }
 
-            const auto*pDescription = pElem->Attribute (DESCRIPTION);
+            const auto*pDescription = pElem->Attribute (DESCRIPTION_TAG);
             if (pDescription) newMsgDefinition.description_=*pDescription;
 
             int blockLength;
-            if (pElem->QueryIntAttribute (BLOCK_LENGTH, &blockLength)==TIXML_SUCCESS) {
+            if (pElem->QueryIntAttribute (BLOCK_LENGTH_TAG, &blockLength) == TIXML_SUCCESS) {
                 newMsgDefinition.blockLength_=static_cast <decltype(newMsgDefinition.blockLength_)>(blockLength);
             };
 
             int id;
-            if (pElem->QueryIntAttribute (ID, &id)==TIXML_SUCCESS) {
+            if (pElem->QueryIntAttribute (ID_TAG, &id) == TIXML_SUCCESS) {
                 newMsgDefinition.id_=static_cast <decltype(newMsgDefinition.id_)>(id);
             };
 
-            //TODO read fields next
+            //Read Fields
+            TiXmlElement* pFieldElem=pElem->FirstChildElement (FIELD_TAG);
+            for (; pFieldElem; pFieldElem = pFieldElem->NextSiblingElement(FIELD_TAG)) {
 
-            ilink3Msgs_.emplace (newMsgDefinition.id_, newMsgDefinition);
+                const std::string*fldNameStr=pFieldElem->Attribute(NAME_TAG);
+                if (fldNameStr) {
+                    newMsgDefinition.name_ = *fldNameStr;
+                } else {
+                    LOGERROR("Found entry in ns2:message without a name.");
+                    continue;
+                }
+            }
+
+
+
+//            ilink3Msgs_.emplace (newMsgDefinition.id_, newMsgDefinition);
         }
     }
+
+
 
     return true;
 }
