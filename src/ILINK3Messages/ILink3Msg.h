@@ -14,8 +14,8 @@ public:
 
 };
 
-struct DATA {
-    std::uint16_t length;
+struct Data {
+    std::uint16_t length {0};
     char* varData;
 };
 
@@ -35,8 +35,6 @@ public:
     void readFromBuffer (MessageBuffer &msgBuffer);
 protected:
     struct __attribute__ ((packed))  BlockData {
-        // std::array <char, 10> CustomerFlow;
-        // std::array <char, 10> HMACVersion;
         std::array<char, 32> HMACSignature;
         std::array<char, 20> AccessKeyID;
         std::uint64_t UUID;
@@ -46,6 +44,8 @@ protected:
     };
 
     const BlockData* blockData_ {nullptr};
+
+    Data data;
 };
 
 enum class FTI: std::uint8_t {Backup=0, Primary=1, Null=255};
@@ -55,25 +55,34 @@ class NegotiationResponseMsg {
 public:
     inline static const std::size_t id {500};
 
-    void writeToBuffer (MessageBuffer &msgBuffer);
 protected:
     struct __attribute__ ((packed))  BlockData {
-
         std::uint64_t UUID;
         std::uint64_t RequestTimestamp;
         std::uint16_t SecretKeySecureIDExpiration {65535};
         FTI FaultToleranceIndicator {FTI::Null};
         SplitMsg SplitMsg {SplitMsg::Null};
-
-
-        std::array<char, 32> HMACSignature;
-        std::array<char, 20> AccessKeyID;
-
-        std::uint64_t RequestTimestamp;
-        std::array<char, 3> Session;
-        std::array<char, 5> Firm;
+        std::uint32_t PreviousSeqNo;
+        std::uint64_t PreviousUUID;
+        std::uint16_t length {0};
     };
+
+    const BlockData* blockData_;
+
+    Data data;
 };
+
+class NegotiationResponseMsgOut: public NegotiationResponseMsg {
+public:
+    NegotiationResponseMsgOut () {
+        blockData_=&blockDataWrite;
+    };
+
+    void writeToBuffer (MessageBuffer &msgBuffer);
+protected:
+    BlockData blockDataWrite;
+};
+
 
 
 #endif //CMESIMULATOR_ILINK3MSG_H

@@ -13,8 +13,6 @@
 std::unique_ptr<ILink3Msg> MsgFactory::processMessage(MessageBuffer &msgBuffer) {
     const SBEHeader* sbeHeader= reinterpret_cast<const SBEHeader*>(msgBuffer.getRdPtr());
     msgBuffer.moveRdPtr (sizeof (SBEHeader));
-    std::cout<<sbeHeader->blockLength_<<std::endl;
-    std::cout<<sbeHeader->templateId_<<std::endl;
 
     switch (sbeHeader->templateId_) {
         case NegotiateMsg::id:
@@ -24,10 +22,6 @@ std::unique_ptr<ILink3Msg> MsgFactory::processMessage(MessageBuffer &msgBuffer) 
                 LOGERROR ("Failed to read msg with id "<<NegotiateMsg::id);
                 return nullptr;
             }
-
-            std::cout<<newMsg.getAccessKeyID()<<std::endl;
-            std::cout<<newMsg.getFirm()<<std::endl;
-            std::cout<<newMsg.getSession()<<std::endl;
 
     }
 /*

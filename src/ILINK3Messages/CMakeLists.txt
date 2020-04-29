@@ -26,3 +26,4 @@ target_link_libraries(ILINK3Messages libWebServer)
 
 add_subdirectory(Test)
 add_subdirectory(TestApp)
+add_subdirectory(CodeGenerator)
