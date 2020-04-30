@@ -5,9 +5,11 @@
 #ifndef CMESIMULATOR_ILINK3MSG_H
 #define CMESIMULATOR_ILINK3MSG_H
 
-
+#include <iostream>
 #include <array>
 #include "MessageBuffer.h"
+#include <Ilink3EnumsGen.h>
+
 
 class ILink3Msg {
 public:
@@ -48,8 +50,8 @@ protected:
     Data data;
 };
 
-enum class FTI: std::uint8_t {Backup=0, Primary=1, Null=255};
-enum class SplitMsg: std::uint8_t {SplitMessageDelayed=0, OutofOrderMessageDelayed=1, CompleteMessageDelayed=2,Null=255};
+//enum class FTI: std::uint8_t {Backup=0, Primary=1, Null=255};
+//enum class SplitMsgE: std::uint8_t {SplitMessageDelayed=0, OutofOrderMessageDelayed=1, CompleteMessageDelayed=2,Null=255};
 
 class NegotiationResponseMsg {
 public:
@@ -60,8 +62,8 @@ protected:
         std::uint64_t UUID;
         std::uint64_t RequestTimestamp;
         std::uint16_t SecretKeySecureIDExpiration {65535};
-        FTI FaultToleranceIndicator {FTI::Null};
-        SplitMsg SplitMsg {SplitMsg::Null};
+        IL3Enum::FTI FaultToleranceIndicator {IL3Enum::FTI::Null};
+        IL3Enum::SplitMsg SplitMsg {IL3Enum::SplitMsg::Null};
         std::uint32_t PreviousSeqNo;
         std::uint64_t PreviousUUID;
         std::uint16_t length {0};

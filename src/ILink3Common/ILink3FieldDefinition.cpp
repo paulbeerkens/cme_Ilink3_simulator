@@ -26,10 +26,11 @@ PrimitiveType PrimitiveTypeFromString(const std::string &type) {
 std::ostream &operator<<(std::ostream &os, PrimitiveType type) {
     {
         switch (type) {
-            #define TYPEOUTPUT(t) case PrimitiveType::t: os<<#t; break;
+            #define TYPEOUTPUT(t) case PrimitiveType::t: os<<"std::"<<#t; break;
+            #define TYPEOUTPUT2(t,s) case PrimitiveType::t: os<<#s; break;
 
             TYPEOUTPUT(none_t)
-            TYPEOUTPUT(char_t)
+            TYPEOUTPUT2(char_t,char)
             TYPEOUTPUT(uint8_t)
             TYPEOUTPUT(uint16_t)
             TYPEOUTPUT(uint32_t)

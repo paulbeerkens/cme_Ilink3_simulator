@@ -42,6 +42,7 @@ bool MsgFactory::initialize(MsgFactorySettings &msgFactorySettings) {
     static std::string LENGTH_TAG("length");
     static std::string PRIMITIVE_TYPE_TAG("primitiveType");
     static std::string MESSAGE_TAG("ns2:message");
+    static std::string NULL_VALUE_TAG ("nullValue");
 
     LOGINFO ("Loading ILINK3 message formats from "<<msgFactorySettings.msgFormatFile_);
 
@@ -97,6 +98,13 @@ bool MsgFactory::initialize(MsgFactorySettings &msgFactorySettings) {
                 continue;
             }
             newField.primitiveType_=primitiveType;
+
+            const auto* nullValueStr=pElem->Attribute (NULL_VALUE_TAG);
+            if (nullValueStr) {
+                try {
+                    newField.nullValue = std::stoul(*nullValueStr);
+                } catch (const std::exception& e) {};
+            }
 
             //Add it to the list of known fields
             ilink3Fields_.emplace (newField.name_,newField);

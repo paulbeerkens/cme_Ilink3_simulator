@@ -11,7 +11,7 @@
 #include "ILink3Msg.h"
 #include "MessageBuffer.h"
 #include "MsgFactorySettings.h"
-#include "ILink3FieldDefinition.h"
+#include <ILink3Common/ILink3FieldDefinition.h>
 #include "ILink3MsgDefinition.h"
 
 class MsgFactory {

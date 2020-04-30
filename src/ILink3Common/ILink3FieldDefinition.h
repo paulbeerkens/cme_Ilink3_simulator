@@ -16,6 +16,7 @@ struct ILink3FieldDefinition {
     std::string description_;
     std::size_t length_ {1};
     PrimitiveType primitiveType_ {PrimitiveType::none_t};
+    std::optional <std::uint64_t> nullValue;
 };
 
 PrimitiveType PrimitiveTypeFromString (const std::string& type);
