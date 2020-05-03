@@ -27,7 +27,7 @@ public:
 
     bool readFromSocket (std::int32_t socket, std::size_t size);
 
-    const char* getRdPtr () const {return rdPtr_;};
+    [[nodiscard]] const char* getRdPtr () const {return rdPtr_;};
     void moveRdPtr (std::size_t bytes);
 protected:
     char* buf_    {nullptr};

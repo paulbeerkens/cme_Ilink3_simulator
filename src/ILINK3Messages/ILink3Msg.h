@@ -8,7 +8,7 @@
 #include <iostream>
 #include <array>
 #include "MessageBuffer.h"
-#include <Ilink3EnumsGen.h>
+#include <Generated/ILink3EnumsGen.h>
 
 
 class ILink3Msg {
