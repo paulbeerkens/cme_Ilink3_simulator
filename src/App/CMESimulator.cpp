@@ -17,13 +17,13 @@ bool CMESimulator::setup() {
 }
 
 bool CMESimulator::run() {
-    MsgFactory msgFactory;
-    MarketSegmentGateway msgw (msgFactory);
+//    MsgFactory msgFactory;
+    MarketSegmentGateway msgw ;
 
-    if (!msgFactory.initialize (msgFactorySettings_)) {
+    /*if (!msgFactory.initialize (msgFactorySettings_)) {
         LOGERROR ("Failed to initialze Message Factory. This is fatal.")
         return false;
-    }
+    }*/
 
     if (!msgw.initialize(msgwSettings_)) {
         LOGERROR ("Failed to initialize Market Segment Gateway. This is fatal.")
@@ -35,7 +35,7 @@ bool CMESimulator::run() {
         return false;
     }
 
-    std::this_thread::sleep_for (std::chrono::seconds(60));
+    std::this_thread::sleep_for (std::chrono::seconds(6000));
 
     msgw.stop ();
 

@@ -3,13 +3,13 @@
 //
 #include <iostream>
 #include "MsgFactory.h"
-#include "ILink3Headers.h"
+
 #include "ILink3MsgDefinition.h"
-#include <Logger/LogMacros.h>
+
 #include <tinyxml/tinyxml.h>
 #include <map>
 
-
+/*
 std::unique_ptr<ILink3Msg> MsgFactory::processMessage(MessageBuffer &msgBuffer) {
     const SBEHeader* sbeHeader= reinterpret_cast<const SBEHeader*>(msgBuffer.getRdPtr());
     msgBuffer.moveRdPtr (sizeof (SBEHeader));
@@ -24,12 +24,12 @@ std::unique_ptr<ILink3Msg> MsgFactory::processMessage(MessageBuffer &msgBuffer) 
             }
 
     }
-/*
-    const Negotiate500* msg=reinterpret_cast<const Negotiate500*>(msgBuffer.getRdPtr());
-    std::cout<<msg->UUID<<std::endl;
-    msgBuffer.moveRdPtr (sizeof (Negotiate500));
-    std::cout<<msgBuffer.getLeftToRead()<<std::endl;
-*/
+
+//    const Negotiate500* msg=reinterpret_cast<const Negotiate500*>(msgBuffer.getRdPtr());
+//    std::cout<<msg->UUID<<std::endl;
+//    msgBuffer.moveRdPtr (sizeof (Negotiate500));
+//    std::cout<<msgBuffer.getLeftToRead()<<std::endl;
+
     return nullptr;
 }
 
@@ -201,3 +201,4 @@ void MsgFactory::WebRequestMsgFormat(const webserver::UrlRequest &, std::ostream
     }
     os<<"</table></table>";
 }
+*/

@@ -66,7 +66,7 @@ bool MarketSegmentGateway::stop() {
     return false;
 }
 
-void MarketSegmentGateway::handleClientConnections() {
+void MarketSegmentGateway::handleClientConnections() { //accept loop
     LOGINFO ("MarketSegmentGateway listening on port "<<std::to_string (port_));
 
     while (!requestedToTerminate_.load(std::memory_order_relaxed)) {
@@ -91,7 +91,7 @@ void MarketSegmentGateway::handleClientConnections() {
         }
         LOGINFO ("MarketSegmentGateway connected to a client running on "<<remoteIP);
 
-        auto newConnection=std::make_shared<FIXPConnection> (newSocket, remoteIP,*this);
+        auto newConnection=std::make_shared<FIXPConnection <MarketSegmentGateway>> (newSocket, remoteIP,*this);
         {
             std::lock_guard<std::mutex> guard (mutex_);
             activeConnections_.insert(newConnection);
@@ -109,7 +109,7 @@ void MarketSegmentGateway::handleClientConnections() {
     }
 }
 
-void MarketSegmentGateway::connectionEnd(std::shared_ptr<FIXPConnection> connection) {
+void MarketSegmentGateway::connectionEnd(std::shared_ptr<FIXPConnection <MarketSegmentGateway>> connection) {
     size_t itemsRemoved;
     {
         std::lock_guard <std::mutex> guard (mutex_);
@@ -123,8 +123,23 @@ void MarketSegmentGateway::connectionEnd(std::shared_ptr<FIXPConnection> connect
     }
 }
 
+void MarketSegmentGateway::onMessage([[maybe_unused]] const IL3Msg::NegotiateMsg &msg, [[maybe_unused]] FIXPConnection<MarketSegmentGateway> &connection) {
+
+    IL3Msg::NegotiationResponseMsgOut outMsg;
+
+    outMsg.setUUID (msg.getUUID());
+    outMsg.setRequestTimestamp(msg.getRequestTimestamp());
+    outMsg.setFaultToleranceIndicator(IL3Enum::FTI::Primary);
+    outMsg.setPreviousSeqNo(0);
+    outMsg.setPreviousUUID(msg.getUUID());
+
+    connection.sendMsg (outMsg);
+}
+
+/*
 bool MarketSegmentGateway::processMessage(MessageBuffer &msgBuffer) {
     auto newMsg=msgFactory_.processMessage (msgBuffer);
     return false;
 }
+ */
 

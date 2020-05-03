@@ -150,6 +150,15 @@ int main (int argc, [[maybe_unused]]char** argv) {
     }
     std::cout<<"CodeGenerator: Loaded "<<enums<<" enums with a total of "<<validValues<<" valid values"<<std::endl;
 
+    //The enum file will have entries like this:
+    //enum class TimeInForce: std::uint8_t{
+    //      Day=0 //Day
+    //    , GoodTillCancel=1 //Good Till Cancel
+    //    , FillAndKill=3 //Fill And Kill
+    //    , FillOrKill=4 //Fill Or Kill
+    //    , GoodTillDate=6 //Good Till Date
+    //};
+
     std::ofstream enumFile;
     enumFile.open ("Generated/ILink3EnumsGen.h");
 
@@ -157,13 +166,13 @@ int main (int argc, [[maybe_unused]]char** argv) {
     enumFile<<"//Generated from: "<<argv [1]<<std::endl;
     enumFile<<std::endl;
 
-    enumFile<<"namespace IL3Enum {"<<std::endl;
-    enumFile<<std::endl;
-
     enumFile<<"#ifndef CMESIMULATOR_ILINK3_ENUMS_GEN_H"<<std::endl;
     enumFile<<"#define CMESIMULATOR_ILINK3_ENUMS_GEN_H"<<std::endl;
 
     enumFile<<"#include <cstdint>"<<std::endl;
+    enumFile<<std::endl;
+
+    enumFile<<"namespace IL3Enum {"<<std::endl;
     enumFile<<std::endl;
 
     for (const auto& anEnum: enumDefinitions) {

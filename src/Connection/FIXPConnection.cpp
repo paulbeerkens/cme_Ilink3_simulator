@@ -5,103 +5,29 @@
 #include <future>
 #include <assert.h>
 #include "FIXPConnection.h"
-#include <Logger/LogMacros.h>
-#include <sys/socket.h>
-#include <ILINK3Messages/ILink3Headers.h>
+
+
+
 #include <string.h>
-#include <ILINK3Messages/MessageBuffer.h>
 
-#define LOGID "[ConId: "<<connectionId_<<"] "
 
-//todo start a thread
-//read the Simple Open Framing Header (contains size)
-//Read the entire message
-//process the message
-//callback
-//unittest this
+
+
+
+
+
 //https://www.cmegroup.com/confluence/display/EPICSANDBOX/iLink+3+-+Simple+Binary+Encoding#space-menu-link-content
-FIXPConnection::FIXPConnection(std::int32_t socket, const std::string& remoteHost, IConnectionCB& cb)
-:socket_ (socket)
-,remoteHost_ (remoteHost)
-,cb_ (cb)
-{
-    connectionId_=nextFreeConnectionId_++;
 
-   /* auto newConnection=shared_from_this();
-    std::thread([newConnection](){
-        newConnection->processMessages ();
-    }).detach();*/
 
-/*
-    std::promise <void> threadStartedPromise_;
-    threadPtr_=std::make_unique <std::thread> ([this, &threadStartedPromise_] () {
-        LOGINFO ("Starting connection thread for connection ID:"<<this->connectionId_);
-        threadStartedPromise_.set_value();
-        this->processMessages ();
-        LOGINFO ("Finished connection thread for connection ID:"<<this->connectionId_);
-    });
 
-    threadStartedPromise_.get_future().wait(); //wait till thread has been started;
-    */
-}
 
-void FIXPConnection::processMessages() {
-    MessageBuffer SOFHBuffer (sizeof(SOFH));
-    MessageBuffer SBEHeaderAndMessage (1024);
 
-    while (!requestedToTerminate_) {
 
-        SOFHBuffer.reset();
-        if (!SOFHBuffer.readFromSocket(socket_,sizeof (SOFH) )) {
-            LOGERROR (LOGID<<"Failed to read Simple Open Framing Header.");
-            break;
-        }
-        const SOFH* header= reinterpret_cast<const SOFH*> (SOFHBuffer.getRdPtr ());
 
-        if (header->enodingType_!=0xcafe) {
-            //TODO report this error to a central bad message repository which will be shown on a web page for debugging purposes
-            LOGERROR (LOGID<<"Encoding type in header is not recognized. Not a valid message. Received "<<std::showbase<<std::hex<<header->enodingType_);
-            break;
-        }
 
-        //Read the rest of the message
 
-        //The size in the SOFH is inclusive of SOFH so we need to subtract that (SOFH=Simple Open Framing Header)
-        std::size_t restOfMessageSize=header->msgSize_-sizeof (SOFH);
-        //We are going to reuse the same message buffer but reset (and make sure it is big enough)
-        SBEHeaderAndMessage.expandIfRequired(restOfMessageSize);
-        SBEHeaderAndMessage.reset();
-        if (!SBEHeaderAndMessage.readFromSocket(socket_,restOfMessageSize )) {
-            //TODO report this error to a central bad message repository which will be shown on a web page for debugging purposes
-            LOGERROR (LOGID<<"Failed to read message after SOFH.")
-            break;
-        }
 
-        if (!cb_.processMessage(SBEHeaderAndMessage)) {
-            //TODO report this error to a central bad message repository
-            continue;
-        }
-    }
 
-    cb_.connectionEnd(shared_from_this());
-}
-
-void FIXPConnection::stop() {
-    requestedToTerminate_=true;
-    if (socket_!=-1) {
-        ::shutdown (socket_, SHUT_RDWR); //send the FIN. This makes out code come out of recv calls
-        ::close (socket_);
-        socket_=-1;
-    }
-/*
-    if (threadPtr_) {
-        if (threadPtr_->joinable()) {
-            LOGINFO ("Waiting for thread for connection with ID:"<<connectionId_<<" to stop.");
-            threadPtr_->join ();
-        }
-        threadPtr_=nullptr;
-    }*/
-}
 /*
 bool FIXPConnection::readN(char* buf, std::size_t bytesToRead) {
     decltype(bytesToRead) bytesRead=0;

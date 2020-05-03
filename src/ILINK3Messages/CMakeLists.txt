@@ -1,7 +1,7 @@
 set(HEADER_FILES
         Generated/ILink3EnumsGen.h
         ILink3Headers.h
-        ILink3Msg.h
+        Generated/ILink3Msg.h
         ILink3MsgDefinition.h
         MessageBuffer.h
         MsgFactory.h
@@ -9,7 +9,7 @@ set(HEADER_FILES
         )
 
 set(SOURCE_FILES
-        ILink3Msg.cpp
+        Generated/ILink3Msg.cpp
         ILink3MsgDefinition.cpp
         MessageBuffer.cpp
         MsgFactory.cpp
@@ -34,6 +34,7 @@ target_link_libraries(ILINK3Messages libLog)
 target_link_libraries(ILINK3Messages tinyxml)
 target_link_libraries(ILINK3Messages libWebServer)
 target_link_libraries(ILINK3Messages ILINK3Common)
+target_link_libraries(ILINK3Messages FIXPConnection)
 
 add_subdirectory(Test)
 add_subdirectory(TestApp)

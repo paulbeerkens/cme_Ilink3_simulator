@@ -5,6 +5,7 @@
 #ifndef CMESIMULATOR_ICONNECTIONCB_H
 #define CMESIMULATOR_ICONNECTIONCB_H
 
+/*
 #include <memory>
 #include <ILINK3Messages/MessageBuffer.h>
 
@@ -15,5 +16,6 @@ public:
     virtual void connectionEnd (std::shared_ptr<FIXPConnection> connection)=0;
     virtual bool processMessage (MessageBuffer& msgBuffer)=0;
 };
+*/
 
 #endif //CMESIMULATOR_ICONNECTIONCB_H
