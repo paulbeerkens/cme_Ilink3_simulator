@@ -44,3 +44,18 @@ TEST(ILINK3MessagesTests, Write3) {
     EXPECT_FALSE (buf.bad ());
     EXPECT_EQ (buf.getWrtBufFree (),0);
 }
+
+TEST(ILINK3MessagesTests, Read1) {
+    MessageBuffer buf(20);
+    EXPECT_FALSE (buf.bad ());
+    char c [10] {'H','e','l','l','o',' ','t','e','s','t'};
+    buf.write(c,10);
+    const char* rdPtr {nullptr};
+    EXPECT_EQ (buf.getLeftToRead(),10);
+    rdPtr=buf.getRdPtr();
+    EXPECT_EQ (strncmp (rdPtr,c,10),0);
+    buf.moveRdPtr (6);
+    EXPECT_EQ (buf.getLeftToRead(),4);
+    rdPtr=buf.getRdPtr();
+    EXPECT_EQ (strncmp (rdPtr,c+6,4),0);
+}
