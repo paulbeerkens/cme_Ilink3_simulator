@@ -15,6 +15,9 @@
 namespace IL3Msg {
 
 
+inline static const std::uint16_t SCHEMA_ID=8;
+inline static const std::uint16_t VERSION=5;
+
 struct Data {
     std::uint16_t length{0};
     char *varData;
@@ -95,6 +98,9 @@ protected:
 
 class NegotiationResponseMsgOut : public NegotiationResponseMsg {
 public:
+    inline static const std::size_t blockLength {32};
+    static_assert (NegotiationResponseMsgOut::blockLength==sizeof (NegotiationResponseMsgOut::BlockData));
+
     NegotiationResponseMsgOut() {
         blockData_ = &blockDataWrite;
     };
@@ -117,7 +123,11 @@ public:
 
 protected:
     BlockData blockDataWrite;
+
+
 };
+
+
 
 } //end of namespace IL3Msg
 

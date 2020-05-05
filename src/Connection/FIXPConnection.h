@@ -124,17 +124,26 @@ void FIXPConnection<CallbackType>::sendMsg(MsgType &msg) {
         return;
     }
 
-    std::cout<<msgBuffer.getLeftToRead()<<std::endl;
-
     MessageBuffer headerBuffer (sizeof (SOFH)+sizeof (SBEHeader));
-    //SOFH* sofh=headerBuffer->getWrtPointer ();
-    //SBEHeader sbeHeader=sofh+sizeof (SOFH);
+    SOFH* sofh= reinterpret_cast<SOFH*>(headerBuffer.getWrtPtr ());
+    SBEHeader* sbeHeader= reinterpret_cast<SBEHeader*> ((char*)sofh+sizeof (SOFH));
 
-    //todo populate
+    sofh->msgSize_=msgBuffer.getLeftToRead()+sizeof (SOFH)+sizeof (SBEHeader);
+    sofh->enodingType_=0xCAFE;
+    sbeHeader->templateId_=MsgType::id;
+    sbeHeader->blockLength_=MsgType::blockLength;
+    sbeHeader->schemaId_=IL3Msg::SCHEMA_ID;
+    sbeHeader->version_=IL3Msg::VERSION;
+    headerBuffer.moveWrtPtr (sizeof (SOFH)+sizeof (SBEHeader));
 
-
-    //TODO write send_n and send both buffers
     //could combine the two buffers into one. Look at this after we got this working
+    if (!headerBuffer.sendToSocket(socket_)) {
+        return;
+    }
+
+    if (!msgBuffer.sendToSocket(socket_)) {
+        return;
+    }
 }
 
 #endif //CMESIMULATOR_FIXPCONNECTION_H

@@ -45,6 +45,30 @@ TEST(ILINK3MessagesTests, Write3) {
     EXPECT_EQ (buf.getWrtBufFree (),0);
 }
 
+TEST(ILINK3MessagesTests, Write4) {
+    MessageBuffer buf(10);
+    char c[5]{'H', 'e', 'l', 'l', 'o'};
+    char c2 [5]{' ', 't', 'e', 's', 't'};
+    char c3 [10] {'H','e','l','l','o',' ','t','e','s','t'};
+
+    char *wrt = buf.getWrtPtr();
+    memcpy(wrt, c, 5);
+    buf.moveWrtPtr(5);
+    EXPECT_EQ(buf.getLeftToRead(), 5);
+    EXPECT_FALSE (buf.bad());
+    EXPECT_EQ (strncmp(buf.getRdPtr(), c, 5), 0);
+
+    //Write _test after Hello
+    wrt = buf.getWrtPtr();
+    memcpy(wrt, c2, 5);
+    buf.moveWrtPtr(5);
+    EXPECT_EQ(buf.getLeftToRead(), 10);
+    EXPECT_FALSE (buf.bad());
+    //Buffer should now contain "Hello test"
+    EXPECT_EQ (strncmp(buf.getRdPtr(), c3, 10), 0);
+}
+
+
 TEST(ILINK3MessagesTests, Read1) {
     MessageBuffer buf(20);
     EXPECT_FALSE (buf.bad ());
