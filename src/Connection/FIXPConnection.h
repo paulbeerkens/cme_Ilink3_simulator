@@ -132,8 +132,8 @@ void FIXPConnection<CallbackType>::sendMsg(MsgType &msg) {
     sofh->enodingType_=0xCAFE;
     sbeHeader->templateId_=MsgType::id;
     sbeHeader->blockLength_=MsgType::blockLength;
-    sbeHeader->schemaId_=IL3Msg::SCHEMA_ID;
-    sbeHeader->version_=IL3Msg::VERSION;
+    sbeHeader->schemaId_=IL3Const::SCHEMA_ID;
+    sbeHeader->version_=IL3Const::VERSION;
     headerBuffer.moveWrtPtr (sizeof (SOFH)+sizeof (SBEHeader));
 
     //could combine the two buffers into one. Look at this after we got this working

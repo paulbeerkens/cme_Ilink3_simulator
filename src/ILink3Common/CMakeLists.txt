@@ -1,11 +1,13 @@
 set(HEADER_FILES
         ILink3FieldDefinition.h
         ILink3EnumDefinition.h
+        ILink3MsgDefinition.h
         )
 
 set(SOURCE_FILES
         ILink3FieldDefinition.cpp
         ILink3EnumDefinition.cpp
+        ILink3MsgDefinition.cpp
         )
 
 add_library(ILINK3Common STATIC ${SOURCE_FILES} ${HEADER_FILES})

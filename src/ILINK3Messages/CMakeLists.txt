@@ -1,5 +1,7 @@
 set(HEADER_FILES
+        Generated/ILink3ConstGen.h
         Generated/ILink3EnumsGen.h
+        Generated/ILink3MsgsGen.h
         ILink3Headers.h
         Generated/ILink3Msg.h
         ILink3MsgDefinition.h
@@ -22,6 +24,8 @@ add_custom_command(
         COMMAND CodeGenerator ${PROJECT_SOURCE_DIR}/data/Cme.Futures.iLink3.Sbe.v8.5.xml
         DEPENDS ${PROJECT_SOURCE_DIR}/data/Cme.Futures.iLink3.Sbe.v8.5.xml
         OUTPUT Generated/ILink3EnumsGen.h
+               Generated/ILink3ConstGen.h
+               Generated/ILink3MsgsGen.h
 )
 
 add_library(ILINK3Messages STATIC ${SOURCE_FILES} ${HEADER_FILES})

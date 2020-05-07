@@ -9,14 +9,12 @@
 #include <array>
 #include "../MessageBuffer.h"
 #include <Generated/ILink3EnumsGen.h>
+#include <Generated/ILink3ConstGen.h>
 #include <cstring>
 
 
 namespace IL3Msg {
 
-
-inline static const std::uint16_t SCHEMA_ID=8;
-inline static const std::uint16_t VERSION=5;
 
 struct Data {
     std::uint16_t length{0};
