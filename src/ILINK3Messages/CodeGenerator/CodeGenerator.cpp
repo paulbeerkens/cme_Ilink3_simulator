@@ -360,7 +360,7 @@ int main (int argc, [[maybe_unused]]char** argv) {
     msgFile_h << std::endl;
 
     for (const auto& msgDef: msgDefinitions) {
-        msgFile_h << "class " << msgDef.second.name_ << " {" << std::endl;
+        msgFile_h << "class " << msgDef.second.name_ << "Msg {" << std::endl;
         msgFile_h << "public:" << std::endl;
         msgFile_h << "\tinline static const std::size_t id{" << msgDef.second.msgId_ << "};" << std::endl;
         msgFile_h << std::endl;
@@ -413,7 +413,7 @@ int main (int argc, [[maybe_unused]]char** argv) {
                     msgFile_h << ";" << std::endl;
                 }
             }
-        }
+        };
 
         msgFile_h << "\t};" << std::endl;
         msgFile_h << std::endl;
@@ -424,6 +424,37 @@ int main (int argc, [[maybe_unused]]char** argv) {
             msgFile_h << "\tIL3Composite::Data data_;" << std::endl;
         }
 
+        msgFile_h << "};" << std::endl;
+        msgFile_h << std::endl;
+
+        //*********** Write the output version of the message ********
+        msgFile_h << std::endl;
+        msgFile_h << "class " << msgDef.second.name_ << "MsgOut: public "<<msgDef.second.name_ << "Msg {" << std::endl;
+        msgFile_h << "public:" << std::endl;
+        msgFile_h << "\tinline static const std::size_t blockLength {"<<msgDef.second.blockLength_<<"};"<<std::endl;
+        msgFile_h << "\t//static_assert ("<<msgDef.second.name_<<"MsgOut::blockLength==sizeof ("<<msgDef.second.name_<<"MsgOut::BlockData));"<<std::endl;
+        msgFile_h << std::endl;
+        msgFile_h << "\t" << msgDef.second.name_ << "MsgOut () {"<<std::endl;
+        msgFile_h << "\t\tblockData_ = &blockDataWrite_;"<<std::endl;
+        msgFile_h << "\t};"<<std::endl;
+        msgFile_h << std::endl;
+
+        for (const auto&field: msgDef.second.fields_) {
+            //only fields that have an offset are transmitted over the wire (rest has default values)
+            if (field.offset_.has_value()) {
+                msgFile_h << "\t//" << field.description_ << std::endl;
+                msgFile_h << "\tvoid set" << field.name_ << " ("<<field.getFunctionReturnType()<<" v) { ";
+                msgFile_h << field.setFunctionImpl (field.name_);
+                msgFile_h << "}" << std::endl;
+                msgFile_h << std::endl;
+
+            }
+        }
+        msgFile_h << "\tvoid writeToBuffer(MessageBuffer &msgBuffer);"<<std::endl;
+
+        msgFile_h << "protected:" << std::endl;
+        msgFile_h << "\tBlockData blockDataWrite_;"<<std::endl;
+        msgFile_h << std::endl;
         msgFile_h << "};" << std::endl;
         msgFile_h << std::endl;
     }
@@ -444,9 +475,17 @@ int main (int argc, [[maybe_unused]]char** argv) {
     msgFile_cpp << std::endl;
 
     for (const auto& msgDef: msgDefinitions) {
-        msgFile_cpp << "void IL3Msg::"<<msgDef.second.name_<<"::readFromBuffer(MessageBuffer &msgBuffer) {"<< std::endl;
-        msgFile_cpp << "\t\tblockData_=reinterpret_cast<const BlockData*>(msgBuffer.getRdPtr());"<<std::endl;
-        msgFile_cpp << "\t\tmsgBuffer.moveRdPtr (sizeof (BlockData));"<<std::endl;
+        msgFile_cpp << "void IL3Msg::"<<msgDef.second.name_<<"Msg::readFromBuffer(MessageBuffer &msgBuffer) {"<< std::endl;
+        msgFile_cpp << "\tblockData_=reinterpret_cast<const BlockData*>(msgBuffer.getRdPtr());"<<std::endl;
+        msgFile_cpp << "\tmsgBuffer.moveRdPtr (sizeof (BlockData));"<<std::endl;
+        msgFile_cpp << "}"<< std::endl;
+        msgFile_cpp << std::endl;
+
+        msgFile_cpp << "void IL3Msg::"<<msgDef.second.name_<<"MsgOut::writeToBuffer(MessageBuffer &msgBuffer) {"<<std::endl;
+        msgFile_cpp << "\tmsgBuffer.write(reinterpret_cast<void*>(&blockDataWrite_), sizeof (blockDataWrite_));"<<std::endl;
+        if (msgDef.second.hasDataField_) {
+            msgFile_cpp << "\tdata_.writeToBuffer (msgBuffer);" << std::endl;
+        }
         msgFile_cpp << "}"<< std::endl;
         msgFile_cpp << std::endl;
     };

@@ -24,6 +24,7 @@ struct ILink3EnumDefinition {
     [[nodiscard]] std::string structFieldPrefix  () const;
     [[nodiscard]] std::string getFunctionReturnType  () const;
     [[nodiscard]] std::string getFunctionImpl (const std::string& fieldName) const;
+    [[nodiscard]] std::string setFunctionImpl (const std::string& fieldName) const;
 };
 
 

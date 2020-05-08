@@ -94,3 +94,14 @@ std::string ILink3FieldDefinition::getFunctionImpl([[maybe_unused]]const std::st
     }
     return ss.str ();
 }
+
+std::string ILink3FieldDefinition::setFunctionImpl([[maybe_unused]] const std::string &fieldName) const {
+    std::stringstream ss;
+
+    if (primitiveType_!=PrimitiveType::char_t) {
+        ss<<"blockDataWrite_."<<fieldName<<"=v;";
+    } else {
+        ss<<"(void) v;";
+    }
+    return ss.str ();
+}

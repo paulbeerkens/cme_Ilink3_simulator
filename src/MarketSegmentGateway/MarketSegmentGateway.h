@@ -32,7 +32,7 @@ public:
 
 
     //Callback from MsgFactory
-    void onMessage ([[maybe_unused]] const IL3Msg::Negotiate& msg, [[maybe_unused]] FIXPConnection<MarketSegmentGateway>& connection);
+    void onMessage ([[maybe_unused]] const IL3Msg::NegotiateMsg& msg, [[maybe_unused]] FIXPConnection<MarketSegmentGateway>& connection);
 protected:
     std::int32_t port_ {-1};
     std::int32_t socket_ {-1};

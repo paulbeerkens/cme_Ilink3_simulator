@@ -20,3 +20,9 @@ std::string ILink3EnumDefinition::getFunctionImpl(const std::string &fieldName) 
     ss<<"return blockData_->"<<fieldName<<";";
     return ss.str ();
 }
+
+std::string ILink3EnumDefinition::setFunctionImpl([[maybe_unused]] const std::string &fieldName) const {
+    std::stringstream ss;
+    ss<<"blockDataWrite_."<<fieldName<<"=v;";
+    return ss.str ();
+}

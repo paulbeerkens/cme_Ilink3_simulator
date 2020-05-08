@@ -123,7 +123,7 @@ void MarketSegmentGateway::connectionEnd(std::shared_ptr<FIXPConnection <MarketS
     }
 }
 
-void MarketSegmentGateway::onMessage([[maybe_unused]] const IL3Msg::Negotiate &msg, [[maybe_unused]] FIXPConnection<MarketSegmentGateway> &connection) {
+void MarketSegmentGateway::onMessage([[maybe_unused]] const IL3Msg::NegotiateMsg &msg, [[maybe_unused]] FIXPConnection<MarketSegmentGateway> &connection) {
 
     IL3Msg::NegotiationResponseMsgOut outMsg;
 

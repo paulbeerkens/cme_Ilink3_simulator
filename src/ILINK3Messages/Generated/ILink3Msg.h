@@ -89,7 +89,8 @@ protected:
 };
 */
 
-class NegotiationResponseMsgOut : public NegotiationResponse {
+/*
+class NegotiationResponseMsgOut : public NegotiationResponseMsg {
 public:
     inline static const std::size_t blockLength {32};
     static_assert (NegotiationResponseMsgOut::blockLength==sizeof (NegotiationResponseMsgOut::BlockData));
@@ -119,7 +120,7 @@ protected:
 
 
 };
-
+*/
 
 
 } //end of namespace IL3Msg

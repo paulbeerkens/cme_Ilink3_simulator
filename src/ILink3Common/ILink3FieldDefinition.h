@@ -22,6 +22,7 @@ struct ILink3FieldDefinition {
     [[nodiscard]] std::string structFieldPrefix  () const;
     [[nodiscard]] std::string getFunctionReturnType  () const;
     [[nodiscard]] std::string getFunctionImpl (const std::string& fieldName) const;
+    [[nodiscard]] std::string setFunctionImpl (const std::string& fieldName) const;
 };
 
 PrimitiveType PrimitiveTypeFromString (const std::string& type);

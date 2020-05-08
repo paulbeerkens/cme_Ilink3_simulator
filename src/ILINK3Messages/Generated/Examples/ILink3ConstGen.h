@@ -3,6 +3,7 @@
 
 #ifndef CMESIMULATOR_ILINK3_CONST_GEN_H
 #define CMESIMULATOR_ILINK3_CONST_GEN_H
+
 namespace IL3Const {
 
 inline static const std::uint16_t SCHEMA_ID=8;
