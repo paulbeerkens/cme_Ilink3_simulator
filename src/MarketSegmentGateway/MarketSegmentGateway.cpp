@@ -123,7 +123,7 @@ void MarketSegmentGateway::connectionEnd(std::shared_ptr<FIXPConnection <MarketS
     }
 }
 
-void MarketSegmentGateway::onMessage([[maybe_unused]] const IL3Msg::NegotiateMsg &msg, [[maybe_unused]] FIXPConnection<MarketSegmentGateway> &connection) {
+void MarketSegmentGateway::onMessage(const IL3Msg::NegotiateMsg &msg, FIXPConnection<MarketSegmentGateway> &connection) {
 
     IL3Msg::NegotiationResponseMsgOut outMsg;
 
@@ -135,6 +135,21 @@ void MarketSegmentGateway::onMessage([[maybe_unused]] const IL3Msg::NegotiateMsg
 
     connection.sendMsg (outMsg);
 }
+
+void MarketSegmentGateway::onMessage(const IL3Msg::EstablishMsg &msg, FIXPConnection<MarketSegmentGateway> &connection) {
+
+    IL3Msg::EstablishmentAckMsgOut outMsg;
+    outMsg.setUUID(msg.getUUID());
+    outMsg.setRequestTimestamp (msg.getRequestTimestamp());
+    outMsg.setNextSeqNo (10);
+    outMsg.setPreviousSeqNo (1);
+    outMsg.setPreviousUUID(msg.getUUID ());
+    outMsg.setKeepAliveInterval(msg.getKeepAliveInterval ());
+
+    connection.sendMsg(outMsg);
+}
+
+
 
 /*
 bool MarketSegmentGateway::processMessage(MessageBuffer &msgBuffer) {
