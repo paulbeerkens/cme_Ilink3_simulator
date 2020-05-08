@@ -19,6 +19,11 @@ struct ILink3EnumDefinition {
     std::string name_;
     const ILink3FieldDefinition* encodingType_ {nullptr};
     std::vector <ILink3EnumValidValues> validValues_;
+
+    //helper functions for code generation
+    [[nodiscard]] std::string structFieldPrefix  () const;
+    [[nodiscard]] std::string getFunctionReturnType  () const;
+    [[nodiscard]] std::string getFunctionImpl (const std::string& fieldName) const;
 };
 
 

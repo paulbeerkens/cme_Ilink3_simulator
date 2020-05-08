@@ -10,19 +10,13 @@
 #include "../MessageBuffer.h"
 #include <Generated/ILink3EnumsGen.h>
 #include <Generated/ILink3ConstGen.h>
+#include <Generated/ILink3MsgsGen.h>
+#include "ILink3Composite.h"
 #include <cstring>
 
 
 namespace IL3Msg {
-
-
-struct Data {
-    std::uint16_t length{0};
-    char *varData;
-
-    void writeToBuffer(MessageBuffer &msgBuffer);
-};
-
+/*
 class NegotiateMsg {
 public:
     inline static const std::size_t id{500};
@@ -71,7 +65,7 @@ protected:
 
     const BlockData *blockData_{nullptr};
 
-    Data data;
+    IL3Composite::Data data;
 };
 
 class NegotiationResponseMsg {
@@ -91,10 +85,11 @@ protected:
 
     const BlockData *blockData_;
 
-    Data data;
+    IL3Composite::Data data;
 };
+*/
 
-class NegotiationResponseMsgOut : public NegotiationResponseMsg {
+class NegotiationResponseMsgOut : public NegotiationResponse {
 public:
     inline static const std::size_t blockLength {32};
     static_assert (NegotiationResponseMsgOut::blockLength==sizeof (NegotiationResponseMsgOut::BlockData));

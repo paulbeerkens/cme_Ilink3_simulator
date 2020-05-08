@@ -17,11 +17,18 @@ struct ILink3FieldDefinition {
     std::size_t length_ {1};
     PrimitiveType primitiveType_ {PrimitiveType::none_t};
     std::optional <std::uint64_t> nullValue;
+
+    //helper functions for code generation
+    [[nodiscard]] std::string structFieldPrefix  () const;
+    [[nodiscard]] std::string getFunctionReturnType  () const;
+    [[nodiscard]] std::string getFunctionImpl (const std::string& fieldName) const;
 };
 
 PrimitiveType PrimitiveTypeFromString (const std::string& type);
 
 std::ostream& operator << (std::ostream& os, PrimitiveType type);
+
+bool primitiveTypeIsUnsigned (PrimitiveType pt);
 
 #endif //CMESIMULATOR_ILINK3FIELDDEFINITION_H
 

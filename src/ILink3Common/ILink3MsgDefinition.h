@@ -21,6 +21,11 @@ struct ILink3FieldInMsgDefinition {
     const ILink3FieldDefinition* fieldDefinition_ {nullptr};
     const ILink3EnumDefinition* enumDefinition_ {nullptr};
     FieldId fieldId_ {FieldId::null};
+    std::optional <std::size_t> offset_;
+
+    //helper functions for code generation
+    [[nodiscard]] std::string getFunctionReturnType  () const;
+    [[nodiscard]] std::string getFunctionImpl (const std::string& fieldName) const;
 };
 
 struct ILink3MsgDefinition {
@@ -29,6 +34,8 @@ struct ILink3MsgDefinition {
     std::size_t blockLength_;
 
     std::vector <ILink3FieldInMsgDefinition> fields_;
+
+    bool hasDataField_ {false}; //last field is a data field. Special handling for this
 };
 
 inline std::ostream& operator<< (std::ostream& os, MsgId id) {

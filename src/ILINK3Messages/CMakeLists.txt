@@ -1,4 +1,5 @@
 set(HEADER_FILES
+        Generated/ILink3Composite.h
         Generated/ILink3ConstGen.h
         Generated/ILink3EnumsGen.h
         Generated/ILink3MsgsGen.h
@@ -11,7 +12,9 @@ set(HEADER_FILES
         )
 
 set(SOURCE_FILES
+        Generated/ILink3Composite.cpp
         Generated/ILink3Msg.cpp
+        Generated/ILink3MsgsGen.cpp
         ILink3MsgDefinition.cpp
         MessageBuffer.cpp
         MsgFactory.cpp
@@ -26,6 +29,7 @@ add_custom_command(
         OUTPUT Generated/ILink3EnumsGen.h
                Generated/ILink3ConstGen.h
                Generated/ILink3MsgsGen.h
+               Generated/ILink3MsgsGen.cpp
 )
 
 add_library(ILINK3Messages STATIC ${SOURCE_FILES} ${HEADER_FILES})

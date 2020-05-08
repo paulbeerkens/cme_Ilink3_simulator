@@ -16,6 +16,8 @@
 #include "ILink3Headers.h"
 #include <Logger/LogMacros.h>
 
+#include <Generated/ILink3MsgsGen.h>
+
 template <class CallBack> class FIXPConnection;
 
 template <class CallBack>
@@ -51,11 +53,11 @@ bool MsgFactory<CallBack>::processMessage(MessageBuffer &msgBuffer, FIXPConnecti
     msgBuffer.moveRdPtr (sizeof (SBEHeader));
 
     switch (sbeHeader->templateId_) {
-        case IL3Msg::NegotiateMsg::id: {
-            IL3Msg::NegotiateMsg newMsg;
+        case IL3Msg::Negotiate::id: {
+            IL3Msg::Negotiate newMsg;
             newMsg.readFromBuffer(msgBuffer);
             if (msgBuffer.bad()) {
-                LOGERROR ("Failed to read msg with id " << IL3Msg::NegotiateMsg::id);
+                LOGERROR ("Failed to read msg with id " << IL3Msg::Negotiate::id);
                 return false;
             }
             cb_.onMessage(newMsg, connection);
