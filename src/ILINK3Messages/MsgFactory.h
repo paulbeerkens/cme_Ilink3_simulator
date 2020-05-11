@@ -52,8 +52,21 @@ bool MsgFactory<CallBack>::processMessage(MessageBuffer &msgBuffer, FIXPConnecti
     const SBEHeader* sbeHeader= reinterpret_cast<const SBEHeader*>(msgBuffer.getRdPtr());
     msgBuffer.moveRdPtr (sizeof (SBEHeader));
 
+#define HANDLEMSG(MSG_TYPE)\
+    case IL3Msg::MSG_TYPE::id: {\
+        IL3Msg::MSG_TYPE newMsg;\
+        newMsg.readFromBuffer(msgBuffer);\
+        if (msgBuffer.bad()) {\
+            LOGERROR ("Failed to read msg with id " << IL3Msg::MSG_TYPE::id);\
+            return false;\
+        }\
+        cb_.onMessage(newMsg, connection);\
+        break;\
+    }\
+
     switch (sbeHeader->templateId_) {
-        case IL3Msg::NegotiateMsg::id: {
+        HANDLEMSG(NegotiateMsg)
+        /*case IL3Msg::NegotiateMsg::id: {
             IL3Msg::NegotiateMsg newMsg;
             newMsg.readFromBuffer(msgBuffer);
             if (msgBuffer.bad()) {
@@ -62,17 +75,15 @@ bool MsgFactory<CallBack>::processMessage(MessageBuffer &msgBuffer, FIXPConnecti
             }
             cb_.onMessage(newMsg, connection);
             break;
-        }
-        case IL3Msg::EstablishMsg::id: {
-            IL3Msg::EstablishMsg newMsg;
-            newMsg.readFromBuffer(msgBuffer);
-            if (msgBuffer.bad()) {
-                LOGERROR ("Failed to read msg with id " << IL3Msg::EstablishMsg::id);
-                return false;
-            }
-            cb_.onMessage(newMsg, connection);
-            break;
-        }
+        }*/
+        HANDLEMSG(EstablishMsg)
+
+        HANDLEMSG(SequenceMsg)
+        HANDLEMSG(RetransmitRequestMsg)
+        HANDLEMSG(NewOrderSingleMsg)
+
+
+
         default:
             LOGERROR ("Unhandled message received. Template id: "<<sbeHeader->templateId_);
     }

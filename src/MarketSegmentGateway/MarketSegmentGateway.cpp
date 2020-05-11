@@ -130,7 +130,7 @@ void MarketSegmentGateway::onMessage(const IL3Msg::NegotiateMsg &msg, FIXPConnec
     outMsg.setUUID (msg.getUUID());
     outMsg.setRequestTimestamp(msg.getRequestTimestamp());
     outMsg.setFaultToleranceIndicator(IL3Enum::FTI::Primary);
-    outMsg.setPreviousSeqNo(0);
+    outMsg.setPreviousSeqNo(1);
     outMsg.setPreviousUUID(msg.getUUID());
 
     connection.sendMsg (outMsg);
@@ -141,12 +141,36 @@ void MarketSegmentGateway::onMessage(const IL3Msg::EstablishMsg &msg, FIXPConnec
     IL3Msg::EstablishmentAckMsgOut outMsg;
     outMsg.setUUID(msg.getUUID());
     outMsg.setRequestTimestamp (msg.getRequestTimestamp());
-    outMsg.setNextSeqNo (10);
+    outMsg.setNextSeqNo (1);
     outMsg.setPreviousSeqNo (1);
     outMsg.setPreviousUUID(msg.getUUID ());
+    //outMsg.setPreviousUUID(2);
     outMsg.setKeepAliveInterval(msg.getKeepAliveInterval ());
 
     connection.sendMsg(outMsg);
+}
+
+void MarketSegmentGateway::onMessage(const IL3Msg::SequenceMsg  &msg, FIXPConnection<MarketSegmentGateway> &) {
+    LOGINFO("Recieved SequenceMsg UUID:"<<msg.getUUID()
+      <<" nextSeqNo:"<<msg.getNextSeqNo()
+      <<" faultToleranceInd:"<<msg.getFaultToleranceIndicator()
+      <<" keepAliveIntervalElapsed: "<<msg.getKeepAliveIntervalLapsed());
+}
+
+void MarketSegmentGateway::onMessage(const IL3Msg::RetransmitRequestMsg &msg,
+                                     FIXPConnection<MarketSegmentGateway> &) {
+    LOGINFO ("Recieved RetransmitRequestMsg "
+      <<" UUID:"<<msg.getUUID()
+      <<" requestTimestamp:"<<msg.getRequestTimestamp()
+      <<" lastUUID:"<<msg.getLastUUID()
+      <<" msgCount:"<<msg.getMsgCount()
+      <<" fromSeqNo: "<<msg.getFromSeqNo());
+
+}
+
+void MarketSegmentGateway::onMessage(const IL3Msg::NewOrderSingleMsg &msg,
+                                     [[maybe_unused]] FIXPConnection<MarketSegmentGateway> &connection) {
+    std::cout<<msg.getSeqNum()<<std::endl;
 }
 
 

@@ -13,6 +13,7 @@ set(HEADER_FILES
 
 set(SOURCE_FILES
         Generated/ILink3Composite.cpp
+        Generated/ILink3EnumsGen.cpp
         Generated/ILink3Msg.cpp
         Generated/ILink3MsgsGen.cpp
         ILink3MsgDefinition.cpp
@@ -26,10 +27,11 @@ message (CMAKE_CURRENT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 add_custom_command(
         COMMAND CodeGenerator ${PROJECT_SOURCE_DIR}/data/Cme.Futures.iLink3.Sbe.v8.5.xml
         DEPENDS ${PROJECT_SOURCE_DIR}/data/Cme.Futures.iLink3.Sbe.v8.5.xml
-        OUTPUT Generated/ILink3EnumsGen.h
-               Generated/ILink3ConstGen.h
-               Generated/ILink3MsgsGen.h
-               Generated/ILink3MsgsGen.cpp
+        OUTPUT  Generated/ILink3ConstGen.h
+                Generated/ILink3EnumsGen.h
+                Generated/ILink3EnumsGen.cpp
+                Generated/ILink3MsgsGen.h
+                Generated/ILink3MsgsGen.cpp
 )
 
 add_library(ILINK3Messages STATIC ${SOURCE_FILES} ${HEADER_FILES})

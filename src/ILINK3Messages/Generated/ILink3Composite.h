@@ -17,6 +17,16 @@ struct Data {
     void writeToBuffer(MessageBuffer &msgBuffer);
 };
 
+//Optional Price with constant exponent -9
+struct PRICENULL9 {
+    std::int64_t mantissa {9223372036854775807};
+    static const std::int8_t exponent {-9};
+};
+
+struct ExecInst {
+    std::uint8_t bits_;
+};
+
 
 } //end of namespace IL3Composite
 

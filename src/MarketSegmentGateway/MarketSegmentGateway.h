@@ -34,6 +34,10 @@ public:
     //Callback from MsgFactory
     void onMessage (const IL3Msg::NegotiateMsg& msg, FIXPConnection<MarketSegmentGateway>& connection);
     void onMessage (const IL3Msg::EstablishMsg& msg, FIXPConnection<MarketSegmentGateway>& connection);
+    void onMessage (const IL3Msg::SequenceMsg& msg, FIXPConnection<MarketSegmentGateway>& connection);
+    void onMessage (const IL3Msg::RetransmitRequestMsg& msg, FIXPConnection<MarketSegmentGateway>& connection);
+    void onMessage (const IL3Msg::NewOrderSingleMsg& msg, FIXPConnection<MarketSegmentGateway>& connection);
+
 protected:
     std::int32_t port_ {-1};
     std::int32_t socket_ {-1};
