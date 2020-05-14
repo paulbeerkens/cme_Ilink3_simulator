@@ -5,6 +5,8 @@
 #include <ILink3Common/ILink3EnumDefinition.h>
 #include <map>
 #include <ILink3Common/ILink3MsgDefinition.h>
+#include <ILink3Common/ILink3CompositeDefinition.h>
+#include <ILINK3Messages/Generated/ILink3Composite.h>
 
 int main (int argc, [[maybe_unused]]char** argv) {
 
@@ -165,6 +167,51 @@ int main (int argc, [[maybe_unused]]char** argv) {
     }
     std::cout<<"CodeGenerator: Loaded "<<enums<<" enums with a total of "<<validValues<<" valid values"<<std::endl;
 
+    /*
+    //Read Composite types
+    std::size_t composites {0};
+    std::map <std::string, ILink3CompositeDefinition> compositeDefinitions; //map so that they show up sorted
+    {
+        pElem = hRoot.FirstChild("types").FirstChild("composite").Element();
+        for (; pElem; pElem = pElem->NextSiblingElement("composite")) {
+            ++composites;
+            ILink3CompositeDefinition newComposite;
+
+            const std::string* nameStr=pElem->Attribute(NAME_TAG);
+            if (nameStr) {
+                newComposite.name_ = *nameStr;
+            } else {
+                std::cout<<"CodeGenerator: Found entry in types|composite node without a name."<<std::endl;
+                continue;
+            }
+
+            const std::string* descriptionStr=pElem->Attribute(DESCRIPTION_TAG);
+            if (descriptionStr) {
+                newComposite.description_=*descriptionStr;
+            }
+
+            TiXmlElement* pValues= pElem->FirstChildElement(FIELD_TAG);
+            for (; pValues; pValues = pValues->NextSiblingElement(FIELD_TAG)) {
+                ILink3CompositeField newField;
+
+                const std::string* fieldNameStr=pElem->Attribute(NAME_TAG);
+                if (fieldNameStr) {
+                    newComposite.name_ = *fieldNameStr;
+                } else {
+                    std::cout<<"CodeGenerator: Found entry in types|composite|type for node "<<newComposite.name_<<" without a name."<<std::endl;
+                    continue;
+                }
+                newField.name_=*fieldNameStr;
+
+
+            }
+
+
+
+        }
+    }
+    */
+
     std::size_t fields {0};
     std::map <MsgId, ILink3MsgDefinition> msgDefinitions; //map so that they show up sorted
     {
@@ -230,8 +277,9 @@ int main (int argc, [[maybe_unused]]char** argv) {
                 //Find the field type definition (enum, type or composite)
                 auto fieldItr=ilink3Fields.find (*typeStr);
                 auto enumItr=enumDefinitions.find (*typeStr);
+                auto compositeItr=IL3Composite::knownCompositeTypes.find (*typeStr);
 
-                if (fieldItr==ilink3Fields.end ()&&enumItr==enumDefinitions.end ()) {
+                if (fieldItr==ilink3Fields.end ()&&enumItr==enumDefinitions.end ()&&compositeItr==IL3Composite::knownCompositeTypes.end ()) {
                     std::cout<<"CodeGenerator: Unknown type "<<*typeStr<<" for msg "<<newMsgDef.name_<<std::endl;
                     continue;
                 }
@@ -240,6 +288,9 @@ int main (int argc, [[maybe_unused]]char** argv) {
                 }
                 if (enumItr!=enumDefinitions.end ()) {
                     newField.enumDefinition_=&enumItr->second;
+                }
+                if (compositeItr!=IL3Composite::knownCompositeTypes.end ()) {
+                    newField.compositeDefinition_=*compositeItr;
                 }
 
                 const std::string*offsetStr = pValues->Attribute (OFFSET_TAG);
@@ -263,7 +314,6 @@ int main (int argc, [[maybe_unused]]char** argv) {
     }
     std::cout<<"CodeGenerator: Loaded "<<msgDefinitions.size ()<<" msgs with a total of "<<fields<<" fields."<<std::endl;
 
-
     //****************************** Start of writing to files *******************************
 
     std::ofstream constFile;
@@ -274,6 +324,8 @@ int main (int argc, [[maybe_unused]]char** argv) {
 
     constFile<<"#ifndef CMESIMULATOR_ILINK3_CONST_GEN_H"<<std::endl;
     constFile<<"#define CMESIMULATOR_ILINK3_CONST_GEN_H"<<std::endl;
+    constFile<<std::endl;
+    constFile<<"#include <cstdint>"<<std::endl;
     constFile<<std::endl;
     constFile<<"namespace IL3Const {"<<std::endl;
     constFile<<std::endl;
@@ -442,6 +494,12 @@ int main (int argc, [[maybe_unused]]char** argv) {
                     if (field.enumDefinition_->encodingType_->nullValue.has_value()) {
                         msgFile_h << " {" << field.enumDefinition_->structFieldPrefix () << "::Null}";
                     };
+                    msgFile_h << ";" << std::endl;
+                } else if (field.compositeDefinition_.has_value()) {
+                    //Writes lines like:
+                    //IL3Composite::PRICENULL9 Price;
+                    msgFile_h << "\t\tIL3Composite::"<<*field.compositeDefinition_;
+                    msgFile_h << " " << field.name_;
                     msgFile_h << ";" << std::endl;
                 }
             }

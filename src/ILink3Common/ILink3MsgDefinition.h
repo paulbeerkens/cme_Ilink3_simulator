@@ -20,6 +20,7 @@ struct ILink3FieldInMsgDefinition {
     std::string description_;
     const ILink3FieldDefinition* fieldDefinition_ {nullptr};
     const ILink3EnumDefinition* enumDefinition_ {nullptr};
+    std::optional <std::string> compositeDefinition_;
     FieldId fieldId_ {FieldId::null};
     std::optional <std::size_t> offset_;
 

@@ -4,7 +4,6 @@ set(HEADER_FILES
         Generated/ILink3EnumsGen.h
         Generated/ILink3MsgsGen.h
         ILink3Headers.h
-        Generated/ILink3Msg.h
         ILink3MsgDefinition.h
         MessageBuffer.h
         MsgFactory.h
@@ -14,7 +13,6 @@ set(HEADER_FILES
 set(SOURCE_FILES
         Generated/ILink3Composite.cpp
         Generated/ILink3EnumsGen.cpp
-        Generated/ILink3Msg.cpp
         Generated/ILink3MsgsGen.cpp
         ILink3MsgDefinition.cpp
         MessageBuffer.cpp

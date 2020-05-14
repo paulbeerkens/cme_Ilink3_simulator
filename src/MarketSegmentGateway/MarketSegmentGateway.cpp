@@ -170,7 +170,8 @@ void MarketSegmentGateway::onMessage(const IL3Msg::RetransmitRequestMsg &msg,
 
 void MarketSegmentGateway::onMessage(const IL3Msg::NewOrderSingleMsg &msg,
                                      [[maybe_unused]] FIXPConnection<MarketSegmentGateway> &connection) {
-    std::cout<<msg.getSeqNum()<<std::endl;
+    std::cout<<msg.getSeqNum()<<" price: "<<msg.getPrice().mantissa<<std::endl;
+
 }
 
 

@@ -1,10 +1,12 @@
 set(HEADER_FILES
+        ILink3CompositeDefinition.h
         ILink3FieldDefinition.h
         ILink3EnumDefinition.h
         ILink3MsgDefinition.h
         )
 
 set(SOURCE_FILES
+        ILink3CompositeDefinition.cpp
         ILink3FieldDefinition.cpp
         ILink3EnumDefinition.cpp
         ILink3MsgDefinition.cpp

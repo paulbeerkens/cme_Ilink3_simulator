@@ -11,8 +11,10 @@
 #include <ILINK3Messages/MessageBuffer.h>
 #include <ILINK3Messages/ILink3Headers.h>
 #include <ILINK3Messages/MsgFactory.h>
+#include <Generated/ILink3ConstGen.h>
 #include <Logger/LogMacros.h>
 #include <sys/socket.h>
+
 
 #define LOGID "[ConId: "<<connectionId_<<"] "
 
