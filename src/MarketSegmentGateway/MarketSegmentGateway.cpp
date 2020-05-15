@@ -138,10 +138,15 @@ void MarketSegmentGateway::onMessage(const IL3Msg::NegotiateMsg &msg, FIXPConnec
 
 void MarketSegmentGateway::onMessage(const IL3Msg::EstablishMsg &msg, FIXPConnection<MarketSegmentGateway> &connection) {
 
+    //TODO manage UUIDs
+    connection.setUuid(msg.getUUID());
+    std::size_t nextFreeSeqNo=1;
+    connection.setNextSeqNo(nextFreeSeqNo);
+
     IL3Msg::EstablishmentAckMsgOut outMsg;
     outMsg.setUUID(msg.getUUID());
     outMsg.setRequestTimestamp (msg.getRequestTimestamp());
-    outMsg.setNextSeqNo (1);
+    outMsg.setNextSeqNo (nextFreeSeqNo);
     outMsg.setPreviousSeqNo (1);
     outMsg.setPreviousUUID(msg.getUUID ());
     //outMsg.setPreviousUUID(2);
@@ -171,6 +176,34 @@ void MarketSegmentGateway::onMessage(const IL3Msg::RetransmitRequestMsg &msg,
 void MarketSegmentGateway::onMessage(const IL3Msg::NewOrderSingleMsg &msg,
                                      [[maybe_unused]] FIXPConnection<MarketSegmentGateway> &connection) {
     std::cout<<msg.getSeqNum()<<" price: "<<msg.getPrice().mantissa<<std::endl;
+
+    auto now=std::chrono::system_clock::now ();
+
+#define COPY_FROM_MSG(F) replyMsg.set##F (msg.get##F());
+
+    IL3Msg::ExecutionReportNewMsgOut replyMsg;
+    replyMsg.setSeqNum (connection.getNextSeqNoAndIncrement()); //todo this needs to be synchronized as other threads might be trying to send
+    replyMsg.setUUID (connection.getUuid());
+    replyMsg.setExecID("ExecutionId");
+    COPY_FROM_MSG(SenderID);
+    COPY_FROM_MSG(ClOrdID);
+    COPY_FROM_MSG(PartyDetailsListReqID);
+    replyMsg.setOrderID(100); //TODO need to get this from an to be build order management system
+    IL3Composite::PRICE9 price {msg.getPrice ().mantissa};
+
+    replyMsg.setPrice( price);
+    COPY_FROM_MSG(StopPx);
+    replyMsg.setTransactTime(now.time_since_epoch().count());
+    replyMsg.setSendingTimeEpoch(now.time_since_epoch().count());
+    COPY_FROM_MSG(OrderRequestID);
+
+    COPY_FROM_MSG(Location);
+    COPY_FROM_MSG(SecurityID);
+    COPY_FROM_MSG(OrderQty)
+    COPY_FROM_MSG(MinQty);
+
+    connection.sendMsg(replyMsg);
+
 
 }
 

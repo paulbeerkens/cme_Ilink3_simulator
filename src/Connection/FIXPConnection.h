@@ -36,6 +36,18 @@ public:
 
     template <class MsgType> void sendMsg (MsgType& msg);
 
+    uint64_t getUuid() const {
+        return UUID_;
+    }
+
+    void setUuid(uint64_t uuid) {
+        UUID_ = uuid;
+    }
+
+    std::size_t getNextSeqNoAndIncrement () {return nextSeqNo_++; }
+
+    void setNextSeqNo(std::size_t nextSeqNo) {nextSeqNo_ = nextSeqNo;}
+
 protected:
 
     std::int32_t socket_;
@@ -50,7 +62,13 @@ protected:
     CallbackType& cb_;
     MsgFactory<CallbackType> msgFactory_;
 
-    //bool readN (char* buf, std::size_t bytesToRead);
+    std::uint64_t UUID_;
+
+
+
+protected:
+    //the UUID for this connection. This is set once we receive the EstablishMsg
+    std::atomic <std::size_t> nextSeqNo_ {1}; //Set once we receive EstablishMsg
 };
 
 template<class CallbackType>
